@@ -20,7 +20,59 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 // https://github.com/chimurai/http-proxy-middleware
 var proxyTable = config.dev.proxyTable
 
+// 用 express框架 去请求一个 node sever
+
 var app = express()
+// 从  data.json 中读取数据
+// 定义数据的读取
+// 定义一个 appData 这个对象请求 data.jsom
+
+var appData = require('../data.json');
+var seller = appData.seller;
+var goods =appData.goods;
+var ratings = appData.ratings;
+
+// 编写 路由
+var apiRoutes = express.Router();
+
+apiRoutes.get('/seller', function (req, res) {
+
+  // 返回一个 json 对象
+  res.json({
+    // 返回的错误码，0 表示正确，因为这里是模拟的数据，所以只有正确的情况，如果是真实数据，可能会有一些对数据的限制，这时候就会出现不同的错误，真是的错误码是什么，是要根据项目具体来决定的
+    errno: 0,
+    // 返回商家的相关信息
+    data: seller
+  });
+});
+
+apiRoutes.get('/goods', function (req, res) {
+  res.json({
+    errno: 0,
+    data: goods
+  });
+});
+
+/* apiRoutes.get('/ratings', function (req, res) {
+  res.json({
+    errno: 0,
+    data: ratings
+  });
+}); */
+
+apiRoutes.get('/ratings', function (req, res) {
+	res.json({
+		errno: 0,
+		data: ratings
+	});
+});
+
+//需要在 express 中调用 定义之后的路由，用 app.use() 方法
+//路由都需要通过 路由的 api 进行数据的请求
+// 可以通过 /api/goods  来请求 routes(路由) 的相关数据(包括 seller goods ratings)
+app.use('/api',apiRoutes);
+
+
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
